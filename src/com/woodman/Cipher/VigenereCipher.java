@@ -63,7 +63,11 @@ public class VigenereCipher {
 		    break;
 			}
 			scanner.close();
+			
+			//Remove white spaces from message
+			userInput[1] = userInput[1].replaceAll("\\s", "");
             System.out.println(Arrays.toString(userInput));
+            
 			return userInput;
 		}
 		
@@ -74,10 +78,6 @@ public class VigenereCipher {
 		String leftOver = "";  
 		
 		StringBuilder builder = new StringBuilder();
-
-		//Remove whitespace from key and message
-		key = key.replaceAll("\\s", "");
-		message = message.replaceAll("\\s", "");
 		
 		//Get the number of times the key length divides into the message length evenly
 		int even = message.length() / key.length();
@@ -85,7 +85,7 @@ public class VigenereCipher {
 		    	
 		//Get the remainder
 		int remainder = (message.length() % key.length());
-					
+		
 		    if(key.length() <= message.length()) {
 		        for(int i=0;i<even;i++) {
 		          
@@ -121,15 +121,15 @@ public class VigenereCipher {
 		char[] messageOneArray = messageOne.toCharArray();
 		char[] messageTwoArray = messageTwo.toCharArray();
 		
-		for(int i=0; i<messageOneArray.length - 1; i++) {
+		for(int i=0; i<messageOneArray.length; i++) {
 			
 			//Convert each array to its corresponding numbers, 
 			// one char at a time
 			int messageOneValue = toNumber(messageOneArray[i]);
 			int messageTwoValue = toNumber(messageTwoArray[i]);
-			int newValue = messageOneValue + messageTwoValue;
-			//TODO: handle what happens when you get a number that is bigger than 25 (i.e z + y)
 			
+			int newValue = (messageOneValue + messageTwoValue) % 26;
+
 			System.out.println(messageTwoValue);
 			//Place the new values in an array of ints
 			messageInNumbers[i] = newValue;
@@ -155,16 +155,18 @@ public class VigenereCipher {
 		
 		int[] messageInNumbers = messageToNumbers(message, newMessage);
 		
-		for(int i=0; i<messageInNumbers.length; i++) {
+		for(int i=0; i<messageInNumbers.length - 1; i++) {
 			encryptedMessage[i] = toLetter(messageInNumbers[i]);
 		}
 		
-		System.out.println(encryptedMessage);
+		//Convert to String
+		String encryptedMessageString = String.valueOf(encryptedMessage);
+		
+		System.out.println("Encrypted message: " + encryptedMessageString);
 	}
 	
 
    public static void main(String[] args) {
-
          encrypt();
-	     } 
+   } 
 }
