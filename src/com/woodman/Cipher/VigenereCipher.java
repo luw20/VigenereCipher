@@ -69,12 +69,16 @@ public class VigenereCipher {
 		
     //Converts the message to a series of the key repeating		
 	public static String repeatKeyOverMessage(String key, String message) {
-		String convertedMessage = "";
-		String leftOver = "";
 		
-		//String manipulation begin
+		String convertedMessage = "";
+		String leftOver = "";  
+		
 		StringBuilder builder = new StringBuilder();
 
+		//Remove whitespace from key and message
+		key = key.replaceAll("\\s", "");
+		message = message.replaceAll("\\s", "");
+		
 		//Get the number of times the key length divides into the message length evenly
 		int even = message.length() / key.length();
 		Math.abs(even);
@@ -82,17 +86,21 @@ public class VigenereCipher {
 		//Get the remainder
 		int remainder = (message.length() % key.length());
 					
-		    if(key.length() < message.length()) {
+		    if(key.length() <= message.length()) {
 		        for(int i=0;i<even;i++) {
-		            even = message.length() / key.length();
-		            
-		            remainder = (message.length() % key.length());
+		          
+		            //The length of the key if there is a remainder
 		            leftOver = key.substring(0, remainder);
+		            
+		            //If the key goes into the message evenly n times, simply create a new string of the key
+		            //repeating n times
 		            builder.append(key);
 		     }
 		            	
 		     convertedMessage = builder.toString();
-		            	
+		      
+		    //If the key does not go into the message evenly, concatenate the remainder of 
+		    // the key onto the end of the message
 		    if(remainder != 0) {
 		       convertedMessage += leftOver;
 		    }
@@ -102,57 +110,61 @@ public class VigenereCipher {
 		return convertedMessage;
 	}
 	
-	
-	//takes in an array of Strings and gets numeric value of the first letter of each String, adds them together
-	public static int keyAndMessageToNumber(String words[]) {
-		
-		int numValue = 0;
-		int numValuez = 0;
-		int numValuea =0;
-		for(int i=0; i<words.length - 1; i++) {
 
-        numValuea = toNumber(words[i].charAt(0));
-        numValuez = toNumber(words[i+1].charAt(0));
-        numValue = numValuea + numValuez;
-        System.out.println("value 1: " + numValuea + " value 2: " + numValuez);
+	//Take in two Strings and add their numeric values together 
+	public static int[] messageToNumbers(String messageOne, String messageTwo) {
+
+		//Create empty int array that is the same length as your message
+		int[] messageInNumbers = new int[messageOne.length()];
+		
+		//Convert both messages to char arrays
+		char[] messageOneArray = messageOne.toCharArray();
+		char[] messageTwoArray = messageTwo.toCharArray();
+		
+		for(int i=0; i<messageOneArray.length - 1; i++) {
+			
+			//Convert each array to its corresponding numbers, 
+			// one char at a time
+			int messageOneValue = toNumber(messageOneArray[i]);
+			int messageTwoValue = toNumber(messageTwoArray[i]);
+			int newValue = messageOneValue + messageTwoValue;
+			//TODO: handle what happens when you get a number that is bigger than 25 (i.e z + y)
+			
+			System.out.println(messageTwoValue);
+			//Place the new values in an array of ints
+			messageInNumbers[i] = newValue;
 		}
-		
-		numValue = numValuea + numValuez;
-		System.out.println(numValue);
-		return numValue;
+		System.out.println(Arrays.toString(messageInNumbers));
+		return messageInNumbers;
 	}
 	
-	
-	//takes a key and a message and generates a new letter
-	public static char generateNewLetter() {
-        String[] message = new String[2];
-        message = getUserInput();
-        
-        int textNumericValue = keyAndMessageToNumber(message);
-		System.out.println("Key and message: " + Arrays.toString(message) + " Numerical value: " + textNumericValue);
-		
-		char newLetter = toLetter(textNumericValue);
-		System.out.println(newLetter + "new letter's number: " + toNumber(newLetter));
-		return newLetter;
-	}
-	
-	public static void encrypt(String key, String message) 
+
+	public static void encrypt() 
 	{ 
 		//Separate key and message in user input
 		String[] userInput = getUserInput();
 		
 		//We know the key is the first element of the array
-		key = userInput[0];
-		message = userInput[1];
+		String key = userInput[0];
+		String message = userInput[1];
         
+		char[] encryptedMessage = new char[message.length()];
 		//Repeat the key over the message
-		repeatKeyOverMessage(key, message);
+		String newMessage =  repeatKeyOverMessage(key, message);
+		
+		
+		int[] messageInNumbers = messageToNumbers(message, newMessage);
+		
+		for(int i=0; i<messageInNumbers.length; i++) {
+			encryptedMessage[i] = toLetter(messageInNumbers[i]);
+		}
+		
+		System.out.println(encryptedMessage);
 	}
 	
 
    public static void main(String[] args) {
-         String key = "";
-         String message = "";
-         encrypt(key, message);
+
+         encrypt();
 	     } 
 }
